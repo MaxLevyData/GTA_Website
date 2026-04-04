@@ -1617,9 +1617,11 @@ function handleAuth() {
   } else {
     const provider = new firebase.auth.GoogleAuthProvider();
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => isMobile ? auth.signInWithRedirect(provider) : auth.signInWithPopup(provider))
-      .catch(console.error);
+    if (isMobile) {
+      auth.signInWithRedirect(provider);
+    } else {
+      auth.signInWithPopup(provider).catch(console.error);
+    }
   }
 }
 
