@@ -1,0 +1,2057 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toronto Table — Restaurant Directory</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FDFAF5;
+    --ink: #1A1410;
+    --ink-light: #3D3530;
+    --rust: #C4522A;
+    --rust-light: #E8724A;
+    --gold: #C8962C;
+    --sage: #5A7A5C;
+    --border: #DDD5C8;
+    --card-bg: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    gap: 24px;
+    position: relative;
+  }
+
+  .search-group {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-wrap {
+    position: relative;
+    width: 480px;
+    max-width: calc(100vw - 420px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--cream);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-dot {
+    color: var(--rust);
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 16px 10px 40px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .search-wrap input::placeholder { color: #888; }
+  .search-wrap input:focus {
+    border-color: var(--rust);
+    background: rgba(255,255,255,0.12);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 15px;
+  }
+
+  .header-stats {
+    color: #888;
+    font-size: 13px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .header-stats span {
+    color: var(--rust-light);
+    font-weight: 500;
+  }
+
+  /* HERO STRIP */
+  .hero-strip {
+    background: linear-gradient(135deg, var(--rust) 0%, #8B2500 100%);
+    padding: 48px 32px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-strip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      rgba(255,255,255,0.03) 30px,
+      rgba(255,255,255,0.03) 60px
+    );
+  }
+
+  .hero-strip h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    position: relative;
+  }
+
+  .hero-strip h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .hero-strip p {
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
+    margin-top: 10px;
+    position: relative;
+  }
+
+  /* CONTROLS BAR */
+  .controls-bar {
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    position: sticky;
+    top: 65px;
+    z-index: 90;
+  }
+
+  .controls-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .results-count {
+    font-size: 14px;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  .results-count strong { color: var(--ink); font-weight: 600; }
+
+  .filter-toggle-btn {
+    background: var(--ink);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .filter-toggle-btn:hover { background: var(--ink-light); }
+
+  .filter-badge {
+    background: var(--rust);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .filter-badge.visible { display: flex; }
+
+  .sort-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sort-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .sort-btn:hover { border-color: var(--rust); color: var(--rust); }
+  .sort-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  /* FILTER DRAWER */
+  .drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,15,10,0.5);
+    z-index: 190;
+    backdrop-filter: blur(2px);
+  }
+  .drawer-overlay.open { display: block; }
+
+  .filter-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 410px;
+    max-width: 90vw;
+    background: var(--warm-white);
+    z-index: 195;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.15);
+  }
+  .filter-drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .drawer-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .drawer-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--ink-light);
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.15s;
+    border-radius: 4px;
+  }
+  .drawer-close:hover { color: var(--ink); }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .drawer-section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .drawer-section select {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 9px 32px 9px 12px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.2s;
+  }
+  .drawer-section select:focus { border-color: var(--rust); }
+  #filter-cuisine.chip-controlled { border-color: var(--rust); }
+
+  .drawer-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .clear-btn {
+    background: none;
+    border: 1.5px solid var(--rust);
+    border-radius: 6px;
+    color: var(--rust);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .clear-btn:hover { background: var(--rust); color: #fff; }
+
+  .drawer-apply-btn {
+    flex: 1;
+    background: var(--rust);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .drawer-apply-btn:hover { background: var(--rust-light); }
+
+  .filter-drawer .cuisine-chips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    flex: unset;
+    min-width: unset;
+  }
+
+  .filter-drawer .cuisine-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 6px 6px;
+    font-size: 11px;
+  }
+
+  body.dark .filter-toggle-btn { background: #1E4A50; }
+  body.dark .filter-toggle-btn:hover { background: #2A6570; }
+
+  body.dark .filter-drawer { background: var(--warm-white); }
+  body.dark .drawer-header { border-color: var(--border); }
+  body.dark .drawer-header h3 { color: var(--ink); }
+  body.dark .drawer-section select { background-color: #1E3235; color: var(--ink); }
+  body.dark .drawer-footer { border-color: var(--border); }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 32px;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    animation: fadeUp 0.3s ease both;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  }
+
+  .card-accent {
+    height: 4px;
+    background: linear-gradient(90deg, var(--rust), var(--gold));
+  }
+
+  .card-body {
+    padding: 18px 20px 16px;
+    flex: 1;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .card-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  .card-rating .star { color: var(--gold); font-size: 13px; }
+  .card-rating .num { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+  .card-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-cuisine {
+    background: #FEF0E8;
+    color: var(--rust);
+    border: 1px solid #F5D5C4;
+  }
+
+  .badge-city {
+    background: #EFF5EF;
+    color: var(--sage);
+    border: 1px solid #C8DEC9;
+  }
+
+  .badge-price {
+    background: #FBF6EC;
+    color: var(--gold);
+    border: 1px solid #E8D9B5;
+    font-size: 12px;
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-info-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .card-info-row .icon { font-size: 13px; flex-shrink: 0; }
+
+  .card-info-row a {
+    color: var(--rust);
+    text-decoration: none;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-info-row a:hover { text-decoration: underline; }
+
+  .card-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAFAF8;
+  }
+
+  .reviews {
+    font-size: 11px;
+    color: #aaa;
+  }
+
+  .reviews strong { color: #777; }
+
+  /* BACK TO TOP */
+  .back-to-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 42px;
+    height: 42px;
+    background: var(--rust);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.2s, transform 0.2s, background 0.15s;
+    pointer-events: none;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .back-to-top:hover { background: var(--rust-light); }
+
+  /* PAGINATION */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .page-btn:hover { border-color: var(--rust); color: var(--rust); }
+
+  .page-btn.active {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .page-jump {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 8px;
+    font-size: 13px;
+    color: var(--ink-light);
+  }
+
+  .page-jump input {
+    width: 52px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 8px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .page-jump input:focus { border-color: var(--rust); }
+  .page-jump input::-webkit-outer-spin-button,
+  .page-jump input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .page-jump input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+  body.dark .page-jump input { background: #1A2E30; color: var(--ink); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,15,10,0.7);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 540px;
+    width: 100%;
+    overflow: hidden;
+    animation: modalIn 0.25s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    background: var(--ink);
+    padding: 24px 28px 20px;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+    padding-right: 40px;
+    line-height: 1.2;
+  }
+
+  .modal-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .modal-stars { color: var(--gold); font-size: 16px; }
+  .modal-rating-num { color: #fff; font-size: 18px; font-weight: 700; }
+  .modal-reviews { color: rgba(255,255,255,0.55); font-size: 13px; }
+
+  .modal-body {
+    padding: 24px 28px;
+  }
+
+  .modal-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .modal-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #bbb;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .modal-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  .modal-detail .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .modal-detail a {
+    color: var(--rust);
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .modal-detail a:hover { text-decoration: underline; }
+
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    margin-top: 4px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .hours-row { display: contents; }
+  .hours-day { font-weight: 500; color: var(--ink); }
+
+  /* FAVOURITES */
+  .fav-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 2px 4px;
+    transition: transform 0.15s;
+    color: #ccc;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  @media (hover: hover) {
+    .fav-btn:hover { transform: scale(1.2); color: #E53935; }
+  }
+  .fav-btn.active { color: #E53935; }
+
+  .favs-tab {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .favs-tab:hover { border-color: var(--rust); color: var(--rust); }
+  .favs-tab.active { background: var(--rust); border-color: var(--rust); color: #fff; }
+
+  /* Sign-in popup */
+  .signin-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,15,10,0.6);
+    z-index: 300;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .signin-overlay.show { display: flex; }
+
+  .signin-popup {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalIn 0.2s ease;
+  }
+
+  .signin-popup-icon { font-size: 36px; margin-bottom: 16px; }
+
+  .signin-popup h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .signin-popup p {
+    font-size: 14px;
+    color: var(--ink-light);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .signin-popup-btn {
+    display: inline-block;
+    background: var(--rust);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px 28px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 12px;
+    width: 100%;
+  }
+  .signin-popup-btn:hover { background: var(--rust-light); }
+
+  .signin-popup-dismiss {
+    display: block;
+    font-size: 13px;
+    color: #aaa;
+    cursor: pointer;
+    margin-top: 4px;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.15s;
+  }
+  .signin-popup-dismiss:hover { color: var(--ink-light); }
+
+  body.dark .signin-popup { background: var(--warm-white); border-color: var(--border); }
+  body.dark .signin-popup h3 { color: var(--ink); }
+  body.dark .signin-popup p { color: var(--ink-light); }
+  body.dark .signin-popup-dismiss { color: #5A8080; }
+  body.dark .signin-popup-dismiss:hover { color: var(--ink-light); }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 80px 20px;
+    color: #aaa;
+  }
+
+  .no-results .big { font-size: 48px; margin-bottom: 16px; }
+  .no-results h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  /* SKELETON LOADING */
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, #ece8e1 25%, #ddd8cf 50%, #ece8e1 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  body.dark .skeleton-shimmer {
+    background: linear-gradient(90deg, #1A2E30 25%, #244044 50%, #1A2E30 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .skel-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .skel-accent { height: 4px; }
+  .skel-body { padding: 18px 20px 16px; }
+  .skel-line { border-radius: 4px; }
+  .skel-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 20px;
+    background: #FAFAF8;
+  }
+  body.dark .skel-footer { background: #132022; }
+
+  /* CUISINE CHIPS */
+  .cuisine-chips-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .cuisine-chips-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #999;
+    font-weight: 500;
+    white-space: nowrap;
+    padding-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .cuisine-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cuisine-chip {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 5px 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .cuisine-chip:hover { border-color: var(--rust); color: var(--rust); }
+  .cuisine-chip.active { background: var(--rust); border-color: var(--rust); color: #fff; }
+
+  .chip-edit-btn {
+    background: none;
+    border: 1.5px dashed var(--border);
+    border-radius: 20px;
+    color: #999;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 5px 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 500;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  @media (hover: hover) {
+    .chip-edit-btn:hover { border-style: solid; border-color: var(--rust); color: var(--rust); }
+  }
+  .chip-edit-btn.active { border-style: solid; border-color: var(--rust); color: var(--rust); }
+
+  .chip-picker {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .chip-picker.open { display: flex; }
+  .chip-picker-title {
+    width: 100%;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .chip-search-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--warm-white);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .chip-search-input:focus { border-color: var(--rust); }
+  .chip-search-input::placeholder { color: #aaa; }
+
+  .flag-img {
+    width: 16px;
+    height: 12px;
+    vertical-align: middle;
+    border-radius: 1px;
+    margin-right: 2px;
+  }
+
+  #chip-picker-list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  #chip-picker-list .cuisine-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    padding: 6px 6px;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #aaa;
+  }
+
+  /* DARK MODE */
+  body.dark {
+    --cream: #0C1A1C;
+    --warm-white: #132022;
+    --ink: #D4EDEC;
+    --ink-light: #8BBABA;
+    --border: #244044;
+    --card-bg: #1A2E30;
+    --rust: #2AB5A8;
+    --rust-light: #45CFC2;
+    --gold: #4A9FBF;
+    --sage: #5AB0A0;
+  }
+  body.dark header { background: #080F10; }
+  body.dark .logo-title { color: #ffffff; }
+  body.dark .hero-strip { background: linear-gradient(135deg, #1A6B70 0%, #0A3035 100%); }
+  body.dark .filters select { background-color: #1E3235; color: var(--ink); }
+  body.dark .card-footer { background: #132022; }
+  body.dark .card-rating { background: #1E3235; }
+  body.dark .badge-cuisine { background: #0D2D30; border-color: #1A4A50; color: var(--rust-light); }
+  body.dark .badge-city { background: #0D2820; border-color: #1A4035; }
+  body.dark .badge-price { background: #0D2030; border-color: #1A3550; color: var(--gold); }
+  body.dark .reviews { color: #7AACAC; }
+  body.dark .reviews strong { color: #9ABABA; }
+  body.dark .page-btn { background: #1A2E30; color: var(--ink); }
+  body.dark .sort-btn.active { background: #1E4A50; border-color: #2A6570; color: #fff; }
+  body.dark .modal { background: #1A2E30; }
+  body.dark .modal-header { background: #080F10; }
+  body.dark .modal-section-title { color: #5A9090; }
+  body.dark .modal-detail { color: var(--ink-light); }
+  body.dark .hours-grid { color: #7A9F9F; }
+  body.dark .hours-day { color: var(--ink); }
+  body.dark .no-results h3 { color: var(--ink); }
+
+  .auth-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .auth-btn:hover { background: rgba(255,255,255,0.22); }
+
+  .dark-toggle {
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .toggle-track {
+    width: 66px;
+    height: 28px;
+    background: #87CEEB;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.5s;
+    border: none;
+  }
+
+  body.dark .toggle-track { background: #0D1B3E; }
+
+  .toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    transition: transform 0.4s ease;
+    z-index: 2;
+  }
+
+  body.dark .toggle-knob { transform: translateX(38px); }
+
+  .sun-icon, .moon-icon {
+    position: absolute;
+    top: 0; left: 0;
+    width: 22px; height: 22px;
+    transition: opacity 0.3s;
+  }
+
+  .moon-icon { opacity: 0; }
+  body.dark .sun-icon { opacity: 0; }
+  body.dark .moon-icon { opacity: 1; }
+
+  @media (max-width: 640px) {
+    .auth-btn { font-size: 11px; padding: 5px 10px; }
+
+    /* Existing */
+    .logo-sub { display: none; }
+    .main { padding: 20px 16px; }
+
+    /* Compact hero on mobile */
+    .hero-strip { padding: 22px 16px 18px; }
+    .hero-strip h1 { font-size: 26px; }
+    .hero-strip p { display: none; }
+
+    /* Cuisine label alignment */
+    .cuisine-chips-label { padding-top: 5px; }
+    .grid { grid-template-columns: 1fr; }
+    .sort-group { display: none; }
+
+    /* 1 & 2: Header — logo on row 1, search + toggle on row 2 */
+    .header-inner {
+      padding: 10px 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .search-group {
+      position: static;
+      transform: none;
+      width: 100%;
+      flex: 0 0 100%;
+    }
+
+    .search-wrap {
+      width: 100%;
+      max-width: none;
+      flex: 1;
+    }
+
+    /* Controls bar on mobile */
+    .controls-bar { padding: 8px 16px; top: 88px; }
+    .sort-group { display: none; }
+
+    /* Prevent iOS zoom on input focus */
+    .search-wrap input { font-size: 16px; }
+
+    /* Disable sticky hover on touch devices */
+    .cuisine-chip:hover { border-color: var(--border); color: var(--ink); }
+    .cuisine-chip.active:hover { background: var(--rust); border-color: var(--rust); color: #fff; }
+
+    /* Cuisine chips scroll horizontally on mobile */
+    .cuisine-chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    .cuisine-chips::-webkit-scrollbar { display: none; }
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-title">Toronto<span class="logo-dot">.</span>Table</span>
+      <span class="logo-sub">Restaurant Guide</span>
+    </div>
+    <button id="auth-btn" class="auth-btn" onclick="handleAuth()">Sign In with Google</button>
+    <div class="search-group">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search" placeholder="Search restaurants, streets, cuisines…">
+      </div>
+      <div class="dark-toggle" id="dark-toggle" title="Toggle dark mode">
+        <div class="toggle-track">
+          <div class="toggle-knob">
+            <svg class="sun-icon" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+              <g stroke="#FFD700" stroke-width="2.2" stroke-linecap="round">
+                <line x1="15" y1="2" x2="15" y2="5.5"/>
+                <line x1="15" y1="24.5" x2="15" y2="28"/>
+                <line x1="2" y1="15" x2="5.5" y2="15"/>
+                <line x1="24.5" y1="15" x2="28" y2="15"/>
+                <line x1="5.8" y1="5.8" x2="8.3" y2="8.3"/>
+                <line x1="21.7" y1="21.7" x2="24.2" y2="24.2"/>
+                <line x1="24.2" y1="5.8" x2="21.7" y2="8.3"/>
+                <line x1="8.3" y1="21.7" x2="5.8" y2="24.2"/>
+              </g>
+              <circle cx="15" cy="15" r="6.5" fill="#FFD700"/>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <mask id="moon-mask">
+                  <rect width="30" height="30" fill="white"/>
+                  <circle cx="20" cy="12" r="10" fill="black"/>
+                </mask>
+              </defs>
+              <circle cx="14" cy="16" r="11" fill="#E8E8FF" mask="url(#moon-mask)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="hero-strip">
+  <h1>Discover <em>every table</em><br>in the Greater Toronto Area</h1>
+  <p>5,000+ restaurants — from neighbourhood gems to landmark dining rooms</p>
+</div>
+
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="results-count" id="results-label">Loading…</div>
+    <div class="controls-right">
+      <div class="sort-group">
+        <button class="sort-btn active" data-sort="rating">Top Rated</button>
+        <button class="sort-btn" data-sort="reviews">Most Reviewed</button>
+        <button class="sort-btn" data-sort="name">A–Z</button>
+      </div>
+      <button id="favs-tab" class="favs-tab">♡ Favourites (<span id="favs-count">0</span>)</button>
+      <button class="filter-toggle-btn" onclick="openFilterDrawer()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6L14 13.67V20a1 1 0 0 1-1.45.9l-4-2A1 1 0 0 1 8 18v-4.33L3.2 5.6A1 1 0 0 1 3 4z"/></svg> Filters <span id="filter-badge" class="filter-badge"></span></button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeFilterDrawer()"></div>
+<div class="filter-drawer" id="filter-drawer">
+  <div class="drawer-header">
+    <h3>Filters</h3>
+    <button class="drawer-close" onclick="closeFilterDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section">
+      <div class="drawer-section-label">City</div>
+      <select id="filter-city">
+        <option value="">All Cities</option>
+        <option value="Brampton">Brampton</option><option value="Burlington">Burlington</option><option value="Hamilton">Hamilton</option><option value="Markham">Markham</option><option value="Mississauga">Mississauga</option><option value="Oakville">Oakville</option><option value="Pickering">Pickering</option><option value="Richmond Hill">Richmond Hill</option><option value="Toronto">Toronto</option><option value="Vaughan">Vaughan</option>
+      </select>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Cuisine</div>
+      <select id="filter-cuisine">
+        <option value="">All Cuisines</option>
+        <option value="Afghan">Afghan</option><option value="Albanian">Albanian</option><option value="American">American</option><option value="Angolan">Angolan</option><option value="Argentine">Argentine</option><option value="Armenian">Armenian</option><option value="Azerbaijani">Azerbaijani</option><option value="Bahamian">Bahamian</option><option value="Bangladeshi">Bangladeshi</option><option value="Barbadian">Barbadian</option><option value="Bosnian">Bosnian</option><option value="Brazilian">Brazilian</option><option value="British">British</option><option value="Burmese">Burmese</option><option value="Cameroonian">Cameroonian</option><option value="Canadian">Canadian</option><option value="Cantonese">Cantonese</option><option value="Chilean">Chilean</option><option value="Chinese">Chinese</option><option value="Colombian">Colombian</option><option value="Costa Rican">Costa Rican</option><option value="Creole">Creole</option><option value="Croatian">Croatian</option><option value="Czech">Czech</option><option value="Dominican">Dominican</option><option value="Dutch">Dutch</option><option value="Ecuadorian">Ecuadorian</option><option value="Egyptian">Egyptian</option><option value="Eritrean">Eritrean</option><option value="Ethiopian">Ethiopian</option><option value="Filipino">Filipino</option><option value="French">French</option><option value="Georgian">Georgian</option><option value="German">German</option><option value="Ghanaian">Ghanaian</option><option value="Greek">Greek</option><option value="Grenadian">Grenadian</option><option value="Guatemalan">Guatemalan</option><option value="Guyanese">Guyanese</option><option value="Hungarian">Hungarian</option><option value="Indian">Indian</option><option value="Indonesian">Indonesian</option><option value="Irani">Irani</option><option value="Iraqi">Iraqi</option><option value="Irish">Irish</option><option value="Israeli">Israeli</option><option value="Italian">Italian</option><option value="Jamaican">Jamaican</option><option value="Japanese">Japanese</option><option value="Jordanian">Jordanian</option><option value="Korean">Korean</option><option value="Lebanese">Lebanese</option><option value="Malaysian">Malaysian</option><option value="Maltese">Maltese</option><option value="Mexican">Mexican</option><option value="Nepalese">Nepalese</option><option value="Nigerian">Nigerian</option><option value="Pakistani">Pakistani</option><option value="Palestinian">Palestinian</option><option value="Persian">Persian</option><option value="Peruvian">Peruvian</option><option value="Polish">Polish</option><option value="Portuguese">Portuguese</option><option value="Romanian">Romanian</option><option value="Russian">Russian</option><option value="Salvadoran">Salvadoran</option><option value="Serbian">Serbian</option><option value="Somali">Somali</option><option value="Spanish">Spanish</option><option value="Sri Lankan">Sri Lankan</option><option value="Syrian">Syrian</option><option value="Taiwanese">Taiwanese</option><option value="Tanzanian">Tanzanian</option><option value="Thai">Thai</option><option value="Thai ">Thai </option><option value="Trinidadian">Trinidadian</option><option value="Turkish">Turkish</option><option value="Ukrainian">Ukrainian</option><option value="Uzbek">Uzbek</option><option value="Venezuelan">Venezuelan</option><option value="Vietnamese">Vietnamese</option><option value="Yemeni">Yemeni</option>
+      </select>
+      <div style="margin-top:12px">
+        <div id="cuisine-chips" class="cuisine-chips"></div>
+      </div>
+      <div id="chip-picker" class="chip-picker"></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Price</div>
+      <select id="filter-price">
+        <option value="">Any Price</option>
+        <option value="1">$ Budget</option>
+        <option value="2">$$ Moderate</option>
+        <option value="3">$$$ Upscale</option>
+        <option value="4">$$$$ Fine Dining</option>
+      </select>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Rating</div>
+      <select id="filter-rating">
+        <option value="0">Any Rating</option>
+        <option value="4.5">4.5+★</option>
+        <option value="4">4.0+★</option>
+        <option value="3.5">3.5+★</option>
+      </select>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button id="clear-filters" class="clear-btn">✕ Clear All</button>
+    <button class="drawer-apply-btn" onclick="closeFilterDrawer()">Show Results</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="grid" id="grid"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<div class="signin-overlay" id="signout-overlay" onclick="if(event.target===this)closeSignoutPopup()">
+  <div class="signin-popup">
+    <div class="signin-popup-icon">👋</div>
+    <h3>Sign out?</h3>
+    <p>You'll need to sign back in to access your saved favourites.</p>
+    <button class="signin-popup-btn" onclick="closeSignoutPopup();auth.signOut()">Sign Out</button>
+    <button class="signin-popup-dismiss" onclick="closeSignoutPopup()">Cancel</button>
+  </div>
+</div>
+
+<div class="signin-overlay" id="signin-overlay" onclick="if(event.target===this)closeSigninPopup()">
+  <div class="signin-popup">
+    <div class="signin-popup-icon">♡</div>
+    <h3>Sign in to save favourites</h3>
+    <p>Create a free account to favourite restaurants and sync them across all your devices.</p>
+    <button class="signin-popup-btn" onclick="closeSigninPopup();handleAuth()">Sign In with Google</button>
+    <button class="signin-popup-dismiss" onclick="closeSigninPopup()">Maybe later</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <button class="modal-close" id="modal-close">✕</button>
+      <button class="fav-btn" id="modal-fav-btn" style="position:absolute;top:16px;right:52px;font-size:22px;color:#fff" title="Add to favourites">♡</button>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-rating-row">
+        <span class="modal-stars" id="modal-stars"></span>
+        <span class="modal-rating-num" id="modal-rating-num"></span>
+        <span class="modal-reviews" id="modal-reviews"></span>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-badges" id="modal-badges"></div>
+      <div class="modal-section-title">Details</div>
+      <div id="modal-details"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let RAW = [];
+
+// Cuisine emoji
+const EMOJI = {'Italian':'🍕','Canadian':'🍁','Indian':'🍛','Chinese':'🥟','American':'🍔','Japanese':'🍣','Lebanese':'🧆','Jamaican':'🫙','Mexican':'🌮','Vietnamese':'🍜','Thai':'🌶️','Greek':'🫒','Korean':'🥩','French':'🥐','Caribbean':'🍤','Portuguese':'🥘','Brazilian':'🥩','Spanish':'🥘','Ethiopian':'🍲','Afghan':'🫕','Turkish':'🫕','Peruvian':'🥗','Middle Eastern':'🧆','Cantonese':'🥟','Bangladeshi':'🍛','Iranian':'🫕','Sri Lankan':'🍛','Pakistani':'🍛','Taiwanese':'🥟','Trinidadian':'🫙','Romanian':'🍲','Polish':'🥟','Hungarian':'🥘','Eritrean':'🍲','Somali':'🍲','Ghanaian':'🍲','Haitian':'🍲'};
+
+const PAGE_SIZE = 24;
+let filtered = [];
+let page = 1;
+let sortMode = 'rating';
+
+// Skeleton loading
+function renderSkeletons() {
+  document.getElementById('grid').innerHTML = Array(12).fill(0).map(() => `
+    <div class="skel-card">
+      <div class="skel-accent skeleton-shimmer"></div>
+      <div class="skel-body">
+        <div class="skel-line skeleton-shimmer" style="height:18px;width:65%;margin-bottom:14px"></div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <div class="skel-line skeleton-shimmer" style="height:22px;width:80px"></div>
+          <div class="skel-line skeleton-shimmer" style="height:22px;width:60px"></div>
+          <div class="skel-line skeleton-shimmer" style="height:22px;width:40px"></div>
+        </div>
+        <div class="skel-line skeleton-shimmer" style="height:13px;width:80%;margin-bottom:8px"></div>
+        <div class="skel-line skeleton-shimmer" style="height:13px;width:55%"></div>
+      </div>
+      <div class="skel-footer">
+        <div class="skel-line skeleton-shimmer" style="height:12px;width:40%"></div>
+      </div>
+    </div>`).join('');
+}
+
+// Cuisine chips
+const COUNTRY_CODES = {
+  'Afghan':'af','Albanian':'al','American':'us','Angolan':'ao','Argentine':'ar',
+  'Armenian':'am','Azerbaijani':'az','Bahamian':'bs','Bangladeshi':'bd','Barbadian':'bb',
+  'Bosnian':'ba','Brazilian':'br','British':'gb','Burmese':'mm','Cameroonian':'cm',
+  'Canadian':'ca','Cantonese':'cn','Chilean':'cl','Chinese':'cn','Colombian':'co',
+  'Costa Rican':'cr','Croatian':'hr','Czech':'cz','Dominican':'do','Dutch':'nl',
+  'Ecuadorian':'ec','Egyptian':'eg','Eritrean':'er','Ethiopian':'et','Filipino':'ph',
+  'French':'fr','Georgian':'ge','German':'de','Ghanaian':'gh','Greek':'gr',
+  'Grenadian':'gd','Guatemalan':'gt','Guyanese':'gy','Hungarian':'hu','Indian':'in',
+  'Indonesian':'id','Irani':'ir','Iraqi':'iq','Irish':'ie','Israeli':'il',
+  'Italian':'it','Jamaican':'jm','Japanese':'jp','Jordanian':'jo','Korean':'kr',
+  'Lebanese':'lb','Malaysian':'my','Maltese':'mt','Mexican':'mx','Nepalese':'np',
+  'Nigerian':'ng','Pakistani':'pk','Palestinian':'ps','Persian':'ir','Peruvian':'pe',
+  'Polish':'pl','Portuguese':'pt','Romanian':'ro','Russian':'ru','Salvadoran':'sv',
+  'Serbian':'rs','Somali':'so','Spanish':'es','Sri Lankan':'lk','Syrian':'sy',
+  'Taiwanese':'tw','Tanzanian':'tz','Thai':'th','Trinidadian':'tt','Turkish':'tr',
+  'Ukrainian':'ua','Uzbek':'uz','Venezuelan':'ve','Vietnamese':'vn','Yemeni':'ye'
+};
+
+const DEFAULT_CHIPS = ['Italian','Chinese','American','Mexican','Thai'];
+let userChips = new Set(JSON.parse(localStorage.getItem('tt_chips') || JSON.stringify(DEFAULT_CHIPS)));
+let chipPickerOpen = false;
+let chipSearch = '';
+
+function cuisineIcon(c) {
+  const code = COUNTRY_CODES[c.trim()];
+  if (code) return `<img src="https://flagcdn.com/16x12/${code}.png" class="flag-img" alt="${c}">`;
+  return EMOJI[c] || '🍽️';
+}
+
+function savePrefs() {
+  localStorage.setItem('tt_chips', JSON.stringify([...userChips]));
+  if (currentUser) {
+    db.collection('preferences').doc(currentUser.uid).set({
+      chips: [...userChips],
+      selectedCuisines: [...selectedCuisines],
+      city: document.getElementById('filter-city').value,
+      price: document.getElementById('filter-price').value,
+      rating: document.getElementById('filter-rating').value,
+    }, { merge: true }).catch(console.error);
+  }
+}
+
+function toggleChipPicker() {
+  chipPickerOpen = !chipPickerOpen;
+  chipSearch = '';
+  document.getElementById('chip-picker').classList.toggle('open', chipPickerOpen);
+  renderChips();
+  if (chipPickerOpen) {
+    renderChipPicker();
+    setTimeout(() => { const el = document.getElementById('chip-search'); if (el) el.focus(); }, 50);
+  }
+}
+
+function toggleChipInPicker(cuisine) {
+  if (userChips.has(cuisine)) userChips.delete(cuisine);
+  else userChips.add(cuisine);
+  savePrefs();
+  renderChips();
+  renderChipList();
+}
+
+function renderChipPicker() {
+  document.getElementById('chip-picker').innerHTML =
+    `<div class="chip-picker-title">Select cuisines to show as quick filters</div>
+     <input id="chip-search" class="chip-search-input" placeholder="Search cuisines…" oninput="updateChipSearch(this.value)" value="${chipSearch}">
+     <div id="chip-picker-list"></div>`;
+  renderChipList();
+}
+
+function updateChipSearch(val) {
+  chipSearch = val;
+  renderChipList();
+}
+
+function renderChipList() {
+  const allCuisines = RAW.length
+    ? [...new Set(RAW.map(r => r['Cuisine']).filter(Boolean))].sort()
+    : DEFAULT_CHIPS.slice().sort();
+  const display = chipSearch
+    ? allCuisines.filter(c => c.toLowerCase().includes(chipSearch.toLowerCase()))
+    : allCuisines;
+  document.getElementById('chip-picker-list').innerHTML = display.length
+    ? display.map(c => `<button class="cuisine-chip${userChips.has(c) ? ' active' : ''}" onclick="toggleChipInPicker('${c.replace(/'/g, "\\'")}')">${cuisineIcon(c)} ${c}</button>`).join('')
+    : `<span style="color:#999;font-size:13px">No cuisines found</span>`;
+}
+
+function renderChips() {
+  let available = null;
+  if (RAW.length) {
+    const filters = getActiveFilters();
+    const base = showFavsOnly ? RAW.filter(r => FAVS.has(favKey(r))) : RAW;
+    available = new Set(base.filter(r => matchesFilters(r, filters, 'cuisine')).map(r => r['Cuisine']));
+  }
+  const chips = [...userChips].sort()
+    .filter(c => !available || available.has(c) || selectedCuisines.has(c))
+    .map(c =>
+      `<button class="cuisine-chip${selectedCuisines.has(c) ? ' active' : ''}" onclick="selectChip('${c.replace(/'/g, "\\'")}')">${cuisineIcon(c)} ${c}</button>`
+    ).join('');
+  document.getElementById('cuisine-chips').innerHTML =
+    chips + `<button class="chip-edit-btn${chipPickerOpen ? ' active' : ''}" onclick="toggleChipPicker()">✎ Edit</button>`;
+  document.getElementById('filter-cuisine').classList.toggle('chip-controlled', selectedCuisines.size > 0);
+}
+
+function selectChip(cuisine) {
+  if (selectedCuisines.has(cuisine)) {
+    selectedCuisines.delete(cuisine);
+  } else {
+    selectedCuisines.add(cuisine);
+  }
+  document.getElementById('filter-cuisine').value = '';
+  savePrefs();
+  applyFilters();
+}
+
+let FAVS = new Set();
+let selectedCuisines = new Set();
+let currentUser = null;
+let showFavsOnly = false;
+
+// ── Firebase ──────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyAvxV1bRBVvtf_O-Azy1Z2UaROktFcXqu4",
+  authDomain:        "toronto-table.firebaseapp.com",
+  projectId:         "toronto-table",
+  storageBucket:     "toronto-table.firebasestorage.app",
+  messagingSenderId: "515305369854",
+  appId:             "1:515305369854:web:fb303f5a0f9cbec2a775af"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+auth.getRedirectResult().then(result => {
+  if (result && result.user) {
+    auth.updateCurrentUser(result.user);
+  }
+}).catch(console.error);
+
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  const btn = document.getElementById('auth-btn');
+  if (user) {
+    const name = user.displayName ? user.displayName.split(' ')[0] : user.email;
+    btn.textContent = 'Sign Out (' + name + ')';
+    loadFavsFromFirestore(user.uid);
+    loadPrefsFromFirestore(user.uid);
+  } else {
+    btn.textContent = 'Sign In with Google';
+    FAVS = new Set(JSON.parse(localStorage.getItem('tt_favs_v2') || '[]'));
+    updateFavsCount();
+    if (RAW.length) applyFilters();
+  }
+});
+
+function handleAuth() {
+  if (currentUser) {
+    showSignoutPopup();
+  } else {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    auth.signInWithPopup(provider).catch(console.error);
+  }
+}
+
+function loadFavsFromFirestore(uid) {
+  db.collection('favourites').doc(uid).get().then(doc => {
+    FAVS = new Set(doc.exists ? (doc.data().keys || []) : []);
+    updateFavsCount();
+    if (RAW.length) applyFilters();
+  }).catch(() => {
+    FAVS = new Set();
+    updateFavsCount();
+  });
+}
+
+function loadPrefsFromFirestore(uid) {
+  db.collection('preferences').doc(uid).get().then(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.chips) {
+        userChips = new Set(data.chips);
+        localStorage.setItem('tt_chips', JSON.stringify(data.chips));
+      }
+      if (data.selectedCuisines) selectedCuisines = new Set(data.selectedCuisines);
+      if (data.city)   document.getElementById('filter-city').value = data.city;
+      if (data.price)  document.getElementById('filter-price').value = data.price;
+      if (data.rating) document.getElementById('filter-rating').value = data.rating;
+    }
+    if (RAW.length) applyFilters();
+    renderChips();
+  }).catch(console.error);
+}
+
+function updateFavsCount() {
+  const el = document.getElementById('favs-count');
+  if (el) el.textContent = FAVS.size;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+function favKey(r) { return r['Restaurant Name'] + '|||' + r['City'] + '|||' + (r['Street'] || ''); }
+
+function saveFavs() {
+  if (currentUser) {
+    db.collection('favourites').doc(currentUser.uid).set({ keys: [...FAVS] }).catch(console.error);
+  } else {
+    localStorage.setItem('tt_favs_v2', JSON.stringify([...FAVS]));
+  }
+  updateFavsCount();
+}
+
+function showSigninPopup() {
+  document.getElementById('signin-overlay').classList.add('show');
+}
+function closeSigninPopup() {
+  document.getElementById('signin-overlay').classList.remove('show');
+}
+function showSignoutPopup() {
+  document.getElementById('signout-overlay').classList.add('show');
+}
+function closeSignoutPopup() {
+  document.getElementById('signout-overlay').classList.remove('show');
+}
+
+function toggleFav(idx, e) {
+  e.stopPropagation();
+  if (!currentUser) { showSigninPopup(); return; }
+  const key = favKey(RAW[idx]);
+  if (FAVS.has(key)) FAVS.delete(key);
+  else FAVS.add(key);
+  saveFavs();
+  const isFav = FAVS.has(key);
+  document.querySelectorAll('.fav-btn[data-idx="' + idx + '"]').forEach(btn => {
+    btn.classList.toggle('active', isFav);
+    btn.textContent = isFav ? '❤' : '♡';
+  });
+  const modalBtn = document.getElementById('modal-fav-btn');
+  if (modalBtn && modalBtn.dataset.idx == idx) {
+    modalBtn.classList.toggle('active', isFav);
+    modalBtn.textContent = isFav ? '❤' : '♡';
+  }
+  if (showFavsOnly) applyFilters();
+}
+
+function stars(r) {
+  const full = Math.floor(r);
+  const half = r % 1 >= 0.5 ? 1 : 0;
+  let s = '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
+  return s.slice(0,5);
+}
+
+function price(p) {
+  return '$'.repeat(p || 1);
+}
+
+function getActiveFilters(excludeKey) {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const city = document.getElementById('filter-city').value;
+  const cuisine = document.getElementById('filter-cuisine').value;
+  const priceF = document.getElementById('filter-price').value;
+  const ratingF = parseFloat(document.getElementById('filter-rating').value) || 0;
+  return { q, city, cuisine, priceF, ratingF };
+}
+
+function matchesFilters(r, filters, excludeKey) {
+  const { q, city, cuisine, priceF, ratingF } = filters;
+  if (q) {
+    const haystack = (r['Restaurant Name'] + ' ' + r['City'] + ' ' + r['Cuisine'] + ' ' + r['Street']).toLowerCase();
+    if (!haystack.includes(q)) return false;
+  }
+  if (excludeKey !== 'city' && city && r['City'] !== city) return false;
+  if (excludeKey !== 'cuisine') {
+    if (selectedCuisines.size > 0 && !selectedCuisines.has(r['Cuisine'])) return false;
+    else if (selectedCuisines.size === 0 && cuisine && r['Cuisine'] !== cuisine) return false;
+  }
+  if (excludeKey !== 'price' && priceF && r['Price Level'] != priceF) return false;
+  if (excludeKey !== 'rating' && ratingF && r['Rating'] < ratingF) return false;
+  return true;
+}
+
+function updateFilterOptions() {
+  const filters = getActiveFilters();
+  const base = showFavsOnly ? RAW.filter(r => FAVS.has(favKey(r))) : RAW;
+
+  // Helper to rebuild a select with only valid options
+  function rebuildSelect(el, allOptions, validSet, labelKey) {
+    const current = el.value;
+    const firstOption = el.options[0]; // "All X" option
+    el.innerHTML = '';
+    el.appendChild(firstOption);
+    allOptions.forEach(opt => {
+      if (validSet.has(opt.value)) {
+        el.appendChild(opt);
+      }
+    });
+    // Restore selection if still valid
+    el.value = validSet.has(current) ? current : '';
+  }
+
+  // Cities
+  const validCities = new Set(base.filter(r => matchesFilters(r, filters, 'city')).map(r => r['City']));
+  const cityEl = document.getElementById('filter-city');
+  rebuildSelect(cityEl, allCityOptions, validCities);
+
+  // Cuisines
+  const validCuisines = new Set(base.filter(r => matchesFilters(r, filters, 'cuisine')).map(r => r['Cuisine']));
+  const cuisineEl = document.getElementById('filter-cuisine');
+  rebuildSelect(cuisineEl, allCuisineOptions, validCuisines);
+
+  // Prices
+  const validPrices = new Set(base.filter(r => matchesFilters(r, filters, 'price')).map(r => String(r['Price Level'])));
+  const priceEl = document.getElementById('filter-price');
+  rebuildSelect(priceEl, allPriceOptions, validPrices);
+
+  // Ratings
+  const maxRating = Math.max(0, ...base.filter(r => matchesFilters(r, filters, 'rating')).map(r => r['Rating']));
+  const ratingEl = document.getElementById('filter-rating');
+  const currentRating = ratingEl.value;
+  const firstRatingOpt = ratingEl.options[0];
+  ratingEl.innerHTML = '';
+  ratingEl.appendChild(firstRatingOpt);
+  allRatingOptions.forEach(opt => {
+    if (maxRating >= parseFloat(opt.value)) ratingEl.appendChild(opt);
+  });
+  ratingEl.value = (currentRating !== '0' && maxRating >= parseFloat(currentRating)) ? currentRating : '0';
+}
+
+function applyFilters() {
+  const filters = getActiveFilters();
+
+  filtered = RAW.filter(r => (!showFavsOnly || FAVS.has(favKey(r))) && matchesFilters(r, filters, null));
+
+  if (sortMode === 'rating') filtered.sort((a,b) => b['Rating'] - a['Rating'] || b['Number of Reviews'] - a['Number of Reviews']);
+  else if (sortMode === 'reviews') filtered.sort((a,b) => b['Number of Reviews'] - a['Number of Reviews']);
+  else filtered.sort((a,b) => a['Restaurant Name'].localeCompare(b['Restaurant Name']));
+
+  updateFilterOptions();
+  updateFilterBadge();
+  page = 1;
+  render();
+  renderChips();
+}
+
+function render() {
+  const total = filtered.length;
+  document.getElementById('results-label').innerHTML = `<strong>${total.toLocaleString()}</strong> restaurants`;
+
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = filtered.slice(start, start + PAGE_SIZE);
+
+  const grid = document.getElementById('grid');
+
+  if (slice.length === 0) {
+    grid.innerHTML = `<div class="no-results" style="grid-column:1/-1">
+      <div class="big">🍽️</div>
+      <h3>No restaurants found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = slice.map((r, i) => {
+    const em = cuisineIcon(r['Cuisine']);
+    const delay = (i % PAGE_SIZE) * 20;
+    const rawIdx = RAW.indexOf(r);
+    const isFav = FAVS.has(favKey(r));
+    return `<div class="card" style="animation-delay:${delay}ms" onclick="openModal(${rawIdx})">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${r['Restaurant Name']}</div>
+          <div class="card-rating"><span class="star">★</span><span class="num">${r['Rating'].toFixed(1)}</span></div>
+        </div>
+        <div class="card-meta">
+          <span class="badge badge-cuisine">${em} ${r['Cuisine']}</span>
+          <span class="badge badge-city">📍 ${r['City']}</span>
+          <span class="badge badge-price">${price(r['Price Level'])}</span>
+        </div>
+        <div class="card-info">
+          ${r['Street'] ? `<div class="card-info-row"><span class="icon">🗺</span> ${r['Street']}</div>` : ''}
+          ${r['Phone'] ? `<div class="card-info-row"><span class="icon">📞</span> ${r['Phone']}</div>` : ''}
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="reviews"><strong>${r['Number of Reviews'].toLocaleString()}</strong> reviews</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${r['Website'] ? `<a href="${r['Website']}" target="_blank" onclick="event.stopPropagation()" style="font-size:12px;color:var(--rust);text-decoration:none">Visit ↗</a>` : ''}
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-idx="${rawIdx}" onclick="toggleFav(${rawIdx}, event)" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}">${isFav ? '❤' : '♡'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn" ${page===1?'disabled':''} onclick="goPage(${page-1})">‹ Prev</button>`;
+
+  const range = [];
+  for (let p = 1; p <= pages; p++) {
+    if (p === 1 || p === pages || (p >= page - 2 && p <= page + 2)) range.push(p);
+    else if (range[range.length-1] !== '…') range.push('…');
+  }
+
+  range.forEach(p => {
+    if (p === '…') html += `<span class="page-btn" style="border:none;color:#bbb">…</span>`;
+    else html += `<button class="page-btn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  });
+
+  html += `<button class="page-btn" ${page===pages?'disabled':''} onclick="goPage(${page+1})">Next ›</button>`;
+  html += `<div class="page-jump"><span>Go to</span><input type="number" min="1" max="${pages}" placeholder="${page}" onkeydown="if(event.key==='Enter')jumpToPage(this.value,${pages})"><span>of ${pages}</span></div>`;
+  document.getElementById('pagination').innerHTML = html;
+}
+
+function jumpToPage(val, max) {
+  const p = Math.min(Math.max(parseInt(val) || 1, 1), max);
+  goPage(p);
+}
+
+function goPage(p) {
+  page = p;
+  render();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function openModal(idx) {
+  const r = RAW[idx];
+  document.getElementById('modal-title').textContent = r['Restaurant Name'];
+
+  const starVal = Math.round(r['Rating']);
+  document.getElementById('modal-stars').textContent = '★'.repeat(starVal) + '☆'.repeat(5-starVal);
+  document.getElementById('modal-rating-num').textContent = r['Rating'].toFixed(1) + ' / 5';
+  document.getElementById('modal-reviews').textContent = r['Number of Reviews'].toLocaleString() + ' reviews';
+
+  const em = EMOJI[r['Cuisine']] || '🍽️';
+  document.getElementById('modal-badges').innerHTML = `
+    <span class="badge badge-cuisine" style="font-size:13px;padding:5px 13px">${em} ${r['Cuisine']}</span>
+    <span class="badge badge-city" style="font-size:13px;padding:5px 13px">📍 ${r['City']}</span>
+    <span class="badge badge-price" style="font-size:14px;padding:5px 13px">${price(r['Price Level'])}</span>
+  `;
+
+  let details = '';
+  if (r['Street']) {
+    const address = `${r['Street Number'] ? r['Street Number'] + ' ' : ''}${r['Street']}, ${r['City']}${r['Postal Code'] ? ' ' + r['Postal Code'] : ''}`;
+    const mapsQuery = encodeURIComponent(address);
+    details += `<div class="modal-detail"><span class="icon">🗺</span><a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" style="color:var(--rust);text-decoration:none">${address}</a></div>`;
+  }
+  if (r['Phone']) details += `<div class="modal-detail"><span class="icon">📞</span><a href="tel:${r['Phone']}">${r['Phone']}</a></div>`;
+  if (r['Website']) details += `<div class="modal-detail"><span class="icon">🌐</span><a href="${r['Website']}" target="_blank">${r['Website']}</a></div>`;
+  document.getElementById('modal-details').innerHTML = details;
+
+  const modalFavBtn = document.getElementById('modal-fav-btn');
+  modalFavBtn.dataset.idx = idx;
+  const isFav = FAVS.has(favKey(r));
+  modalFavBtn.classList.toggle('active', isFav);
+  modalFavBtn.textContent = isFav ? '❤' : '♡';
+  modalFavBtn.onclick = (e) => toggleFav(idx, e);
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+document.getElementById('modal-close').onclick = () => document.getElementById('modal-overlay').classList.remove('open');
+document.getElementById('modal-overlay').onclick = (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); };
+
+function openFilterDrawer() {
+  document.getElementById('filter-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeFilterDrawer() {
+  document.getElementById('filter-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+function countActiveFilters() {
+  let n = 0;
+  if (document.getElementById('filter-city').value) n++;
+  if (document.getElementById('filter-cuisine').value || selectedCuisines.size > 0) n++;
+  if (document.getElementById('filter-price').value) n++;
+  if (parseFloat(document.getElementById('filter-rating').value) > 0) n++;
+  return n;
+}
+
+function updateFilterBadge() {
+  const n = countActiveFilters();
+  const badge = document.getElementById('filter-badge');
+  badge.textContent = n;
+  badge.classList.toggle('visible', n > 0);
+}
+
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    sortMode = btn.dataset.sort;
+    applyFilters();
+  };
+});
+
+document.getElementById('search').addEventListener('input', applyFilters);
+['filter-city','filter-price','filter-rating'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => { applyFilters(); savePrefs(); });
+});
+document.getElementById('filter-cuisine').addEventListener('input', () => {
+  selectedCuisines.clear();
+  applyFilters();
+});
+
+document.getElementById('favs-tab').onclick = () => {
+  showFavsOnly = !showFavsOnly;
+  document.getElementById('favs-tab').classList.toggle('active', showFavsOnly);
+  document.getElementById('favs-tab').innerHTML = (showFavsOnly ? '❤' : '♡') + ' Favourites (<span id="favs-count">' + FAVS.size + '</span>)';
+  applyFilters();
+};
+
+document.getElementById('clear-filters').onclick = () => {
+  document.getElementById('search').value = '';
+  document.getElementById('filter-city').value = '';
+  document.getElementById('filter-cuisine').value = '';
+  selectedCuisines.clear();
+  document.getElementById('filter-price').value = '';
+  document.getElementById('filter-rating').value = '0';
+  showFavsOnly = false;
+  document.getElementById('favs-tab').classList.remove('active');
+  document.getElementById('favs-tab').innerHTML = '♡ Favourites (<span id="favs-count">' + FAVS.size + '</span>)';
+  updateFilterBadge();
+  savePrefs();
+  applyFilters();
+};
+
+// Snapshot all original filter options before any filtering
+const allCityOptions = [...document.getElementById('filter-city').options].filter(o => o.value).map(o => o.cloneNode(true));
+const allCuisineOptions = [...document.getElementById('filter-cuisine').options].filter(o => o.value).map(o => o.cloneNode(true));
+const allPriceOptions = [...document.getElementById('filter-price').options].filter(o => o.value).map(o => o.cloneNode(true));
+const allRatingOptions = [...document.getElementById('filter-rating').options].filter(o => o.value && o.value !== '0').map(o => o.cloneNode(true));
+
+// Fetch restaurant data from Google Sheets CSV
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSSi_SfLr86Px-bEWaesSWOpo9Gxehu9Va8eOCk8M1NyvfoQ0UFGiUNZngw2FZHy5wzHeddT4s5Gkk4/pub?gid=1846398112&single=true&output=csv';
+
+function parseCSVRow(line) {
+  const result = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"' && !inQuote) { inQuote = true; }
+    else if (ch === '"' && inQuote) {
+      if (line[i + 1] === '"') { cur += '"'; i++; }
+      else { inQuote = false; }
+    } else if (ch === ',' && !inQuote) { result.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur);
+  return result;
+}
+
+function parseCSV(text) {
+  const rows = text.split('\n').filter(l => l.trim());
+  if (!rows.length) return [];
+  const headers = parseCSVRow(rows[0]);
+  return rows.slice(1).map(row => {
+    const vals = parseCSVRow(row);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h.trim()] = (vals[i] || '').trim(); });
+    obj['Rating'] = parseFloat(obj['Rating']) || 0;
+    obj['Price Level'] = parseInt(obj['Price Level']) || 0;
+    obj['Number of Reviews'] = parseInt(obj['Number of Reviews']) || 0;
+    return obj;
+  }).filter(r => r['Restaurant Name']);
+}
+
+// Dark mode
+const darkToggle = document.getElementById('dark-toggle');
+if (localStorage.getItem('tt_dark') === '1') {
+  document.body.classList.add('dark');
+}
+darkToggle.onclick = () => {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('tt_dark', isDark ? '1' : '0');
+};
+
+window.addEventListener('scroll', () => {
+  document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
+});
+
+renderSkeletons();
+
+fetch(CSV_URL)
+  .then(r => { if (!r.ok) throw new Error('Network error'); return r.text(); })
+  .then(text => {
+    RAW = parseCSV(text);
+    applyFilters();
+  })
+  .catch(() => {
+    document.getElementById('results-label').textContent = 'Failed to load restaurant data. Please refresh.';
+  });
+</script>
+</body>
+</html>
