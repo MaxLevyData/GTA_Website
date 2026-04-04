@@ -1613,8 +1613,10 @@ function handleAuth() {
   if (currentUser) {
     auth.signOut();
   } else {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()))
+      .then(() => isMobile ? auth.signInWithRedirect(provider) : auth.signInWithPopup(provider))
       .catch(console.error);
   }
 }
