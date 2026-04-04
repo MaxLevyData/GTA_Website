@@ -1564,7 +1564,6 @@ function renderChipList() {
 }
 
 function renderChips() {
-  const active = document.getElementById('filter-cuisine').value;
   let available = null;
   if (RAW.length) {
     const filters = getActiveFilters();
@@ -1572,22 +1571,27 @@ function renderChips() {
     available = new Set(base.filter(r => matchesFilters(r, filters, 'cuisine')).map(r => r['Cuisine']));
   }
   const chips = [...userChips].sort()
-    .filter(c => !available || available.has(c) || active === c)
+    .filter(c => !available || available.has(c) || selectedCuisines.has(c))
     .map(c =>
-      `<button class="cuisine-chip${active === c ? ' active' : ''}" onclick="selectChip('${c.replace(/'/g, "\\'")}')">${cuisineIcon(c)} ${c}</button>`
+      `<button class="cuisine-chip${selectedCuisines.has(c) ? ' active' : ''}" onclick="selectChip('${c.replace(/'/g, "\\'")}')">${cuisineIcon(c)} ${c}</button>`
     ).join('');
   document.getElementById('cuisine-chips').innerHTML =
     chips + `<button class="chip-edit-btn${chipPickerOpen ? ' active' : ''}" onclick="toggleChipPicker()">✎ Edit</button>`;
-  document.getElementById('filter-cuisine').classList.toggle('chip-controlled', !!(active && userChips.has(active)));
+  document.getElementById('filter-cuisine').classList.toggle('chip-controlled', selectedCuisines.size > 0);
 }
 
 function selectChip(cuisine) {
-  const el = document.getElementById('filter-cuisine');
-  el.value = el.value === cuisine ? '' : cuisine;
+  if (selectedCuisines.has(cuisine)) {
+    selectedCuisines.delete(cuisine);
+  } else {
+    selectedCuisines.add(cuisine);
+  }
+  document.getElementById('filter-cuisine').value = '';
   applyFilters();
 }
 
 let FAVS = new Set();
+let selectedCuisines = new Set();
 let currentUser = null;
 let showFavsOnly = false;
 
@@ -1723,7 +1727,10 @@ function matchesFilters(r, filters, excludeKey) {
     if (!haystack.includes(q)) return false;
   }
   if (excludeKey !== 'city' && city && r['City'] !== city) return false;
-  if (excludeKey !== 'cuisine' && cuisine && r['Cuisine'] !== cuisine) return false;
+  if (excludeKey !== 'cuisine') {
+    if (selectedCuisines.size > 0 && !selectedCuisines.has(r['Cuisine'])) return false;
+    else if (selectedCuisines.size === 0 && cuisine && r['Cuisine'] !== cuisine) return false;
+  }
   if (excludeKey !== 'price' && priceF && r['Price Level'] != priceF) return false;
   if (excludeKey !== 'rating' && ratingF && r['Rating'] < ratingF) return false;
   return true;
@@ -1932,7 +1939,7 @@ function closeFilterDrawer() {
 function countActiveFilters() {
   let n = 0;
   if (document.getElementById('filter-city').value) n++;
-  if (document.getElementById('filter-cuisine').value) n++;
+  if (document.getElementById('filter-cuisine').value || selectedCuisines.size > 0) n++;
   if (document.getElementById('filter-price').value) n++;
   if (parseFloat(document.getElementById('filter-rating').value) > 0) n++;
   return n;
@@ -1954,8 +1961,12 @@ document.querySelectorAll('.sort-btn').forEach(btn => {
   };
 });
 
-['search','filter-city','filter-cuisine','filter-price','filter-rating'].forEach(id => {
+['search','filter-city','filter-price','filter-rating'].forEach(id => {
   document.getElementById(id).addEventListener('input', applyFilters);
+});
+document.getElementById('filter-cuisine').addEventListener('input', () => {
+  selectedCuisines.clear();
+  applyFilters();
 });
 
 document.getElementById('favs-tab').onclick = () => {
@@ -1969,6 +1980,7 @@ document.getElementById('clear-filters').onclick = () => {
   document.getElementById('search').value = '';
   document.getElementById('filter-city').value = '';
   document.getElementById('filter-cuisine').value = '';
+  selectedCuisines.clear();
   document.getElementById('filter-price').value = '';
   document.getElementById('filter-rating').value = '0';
   showFavsOnly = false;
