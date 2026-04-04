@@ -1,0 +1,1031 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toronto Table — Restaurant Directory</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FDFAF5;
+    --ink: #1A1410;
+    --ink-light: #3D3530;
+    --rust: #C4522A;
+    --rust-light: #E8724A;
+    --gold: #C8962C;
+    --sage: #5A7A5C;
+    --border: #DDD5C8;
+    --card-bg: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    gap: 24px;
+    position: relative;
+  }
+
+  .search-wrap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    max-width: calc(100% - 300px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--cream);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-dot {
+    color: var(--rust);
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 16px 10px 40px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .search-wrap input::placeholder { color: #888; }
+  .search-wrap input:focus {
+    border-color: var(--rust);
+    background: rgba(255,255,255,0.12);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 15px;
+  }
+
+  .header-stats {
+    color: #888;
+    font-size: 13px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .header-stats span {
+    color: var(--rust-light);
+    font-weight: 500;
+  }
+
+  /* HERO STRIP */
+  .hero-strip {
+    background: linear-gradient(135deg, var(--rust) 0%, #8B2500 100%);
+    padding: 48px 32px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-strip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      rgba(255,255,255,0.03) 30px,
+      rgba(255,255,255,0.03) 60px
+    );
+  }
+
+  .hero-strip h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    position: relative;
+  }
+
+  .hero-strip h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.75);
+  }
+
+  .hero-strip p {
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
+    margin-top: 10px;
+    position: relative;
+  }
+
+  .hero-nums {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 28px;
+    position: relative;
+  }
+
+  .hero-num {
+    text-align: center;
+  }
+
+  .hero-num .n {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+  }
+
+  .hero-num .l {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  /* FILTERS */
+  .filters {
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    position: sticky;
+    top: 65px;
+    z-index: 90;
+  }
+
+  .filters-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #999;
+    font-weight: 500;
+    margin-right: 4px;
+  }
+
+  .filters select {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 28px 7px 12px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    transition: border-color 0.2s;
+  }
+
+  .filters select:focus { border-color: var(--rust); }
+
+  .clear-btn {
+    background: none;
+    border: 1.5px solid var(--rust);
+    border-radius: 6px;
+    color: var(--rust);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .clear-btn:hover {
+    background: var(--rust);
+    color: #fff;
+  }
+
+  .sort-group {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  .sort-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .sort-btn:hover { border-color: var(--rust); color: var(--rust); }
+  .sort-btn.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px 32px;
+  }
+
+  .results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .results-count {
+    font-size: 14px;
+    color: #888;
+  }
+
+  .results-count strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  }
+
+  .card-accent {
+    height: 4px;
+    background: linear-gradient(90deg, var(--rust), var(--gold));
+  }
+
+  .card-body {
+    padding: 18px 20px 16px;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .card-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  .card-rating .star { color: var(--gold); font-size: 13px; }
+  .card-rating .num { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+  .card-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-cuisine {
+    background: #FEF0E8;
+    color: var(--rust);
+    border: 1px solid #F5D5C4;
+  }
+
+  .badge-city {
+    background: #EFF5EF;
+    color: var(--sage);
+    border: 1px solid #C8DEC9;
+  }
+
+  .badge-price {
+    background: #FBF6EC;
+    color: var(--gold);
+    border: 1px solid #E8D9B5;
+    font-size: 12px;
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-info-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #888;
+  }
+
+  .card-info-row .icon { font-size: 13px; flex-shrink: 0; }
+
+  .card-info-row a {
+    color: var(--rust);
+    text-decoration: none;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-info-row a:hover { text-decoration: underline; }
+
+  .card-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAFAF8;
+  }
+
+  .reviews {
+    font-size: 11px;
+    color: #aaa;
+  }
+
+  .reviews strong { color: #777; }
+
+  /* PAGINATION */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .page-btn:hover { border-color: var(--rust); color: var(--rust); }
+
+  .page-btn.active {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,15,10,0.7);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 540px;
+    width: 100%;
+    overflow: hidden;
+    animation: modalIn 0.25s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    background: var(--ink);
+    padding: 24px 28px 20px;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+    padding-right: 40px;
+    line-height: 1.2;
+  }
+
+  .modal-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .modal-stars { color: var(--gold); font-size: 16px; }
+  .modal-rating-num { color: #fff; font-size: 18px; font-weight: 700; }
+  .modal-reviews { color: rgba(255,255,255,0.55); font-size: 13px; }
+
+  .modal-body {
+    padding: 24px 28px;
+  }
+
+  .modal-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .modal-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #bbb;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .modal-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  .modal-detail .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .modal-detail a {
+    color: var(--rust);
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .modal-detail a:hover { text-decoration: underline; }
+
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    margin-top: 4px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .hours-row { display: contents; }
+  .hours-day { font-weight: 500; color: var(--ink); }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 80px 20px;
+    color: #aaa;
+  }
+
+  .no-results .big { font-size: 48px; margin-bottom: 16px; }
+  .no-results h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #aaa;
+  }
+
+  @media (max-width: 640px) {
+    .header-inner { padding: 12px 16px; }
+    .logo-sub { display: none; }
+    .hero-nums { gap: 20px; }
+    .filters { padding: 12px 16px; top: 60px; }
+    .main { padding: 20px 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .sort-group { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-title">Toronto<span class="logo-dot">.</span>Table</span>
+      <span class="logo-sub">Restaurant Guide</span>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search" placeholder="Search restaurants, streets, cuisines…">
+    </div>
+  </div>
+</header>
+
+<div class="hero-strip">
+  <h1>Discover <em>every table</em><br>in the Greater Toronto Area</h1>
+  <p>5,000+ restaurants — from neighbourhood gems to landmark dining rooms</p>
+  <div class="hero-nums">
+    <div class="hero-num"><span class="n">5,000+</span><span class="l">Restaurants</span></div>
+    <div class="hero-num"><span class="n">10</span><span class="l">Cities</span></div>
+    <div class="hero-num"><span class="n">80+</span><span class="l">Cuisines</span></div>
+    <div class="hero-num"><span class="n">4.3★</span><span class="l">Avg Rating</span></div>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filters-inner">
+    <span class="filter-label">Filter</span>
+    <select id="filter-city">
+      <option value="">All Cities</option>
+      <option value="Brampton">Brampton</option><option value="Burlington">Burlington</option><option value="Hamilton">Hamilton</option><option value="Markham">Markham</option><option value="Mississauga">Mississauga</option><option value="Oakville">Oakville</option><option value="Pickering">Pickering</option><option value="Richmond Hill">Richmond Hill</option><option value="Toronto">Toronto</option><option value="Vaughan">Vaughan</option>
+    </select>
+    <select id="filter-cuisine">
+      <option value="">All Cuisines</option>
+      <option value="Afghan">Afghan</option><option value="Albanian">Albanian</option><option value="American">American</option><option value="Angolan">Angolan</option><option value="Argentine">Argentine</option><option value="Armenian">Armenian</option><option value="Azerbaijani">Azerbaijani</option><option value="Bahamian">Bahamian</option><option value="Bangladeshi">Bangladeshi</option><option value="Barbadian">Barbadian</option><option value="Bosnian">Bosnian</option><option value="Brazilian">Brazilian</option><option value="British">British</option><option value="Burmese">Burmese</option><option value="Cameroonian">Cameroonian</option><option value="Canadian">Canadian</option><option value="Cantonese">Cantonese</option><option value="Chilean">Chilean</option><option value="Chinese">Chinese</option><option value="Colombian">Colombian</option><option value="Costa Rican">Costa Rican</option><option value="Creole">Creole</option><option value="Croatian">Croatian</option><option value="Czech">Czech</option><option value="Dominican">Dominican</option><option value="Dutch">Dutch</option><option value="Ecuadorian">Ecuadorian</option><option value="Egyptian">Egyptian</option><option value="Eritrean">Eritrean</option><option value="Ethiopian">Ethiopian</option><option value="Filipino">Filipino</option><option value="French">French</option><option value="Georgian">Georgian</option><option value="German">German</option><option value="Ghanaian">Ghanaian</option><option value="Greek">Greek</option><option value="Grenadian">Grenadian</option><option value="Guatemalan">Guatemalan</option><option value="Guyanese">Guyanese</option><option value="Hungarian">Hungarian</option><option value="Indian">Indian</option><option value="Indonesian">Indonesian</option><option value="Irani">Irani</option><option value="Iraqi">Iraqi</option><option value="Irish">Irish</option><option value="Israeli">Israeli</option><option value="Italian">Italian</option><option value="Jamaican">Jamaican</option><option value="Japanese">Japanese</option><option value="Jordanian">Jordanian</option><option value="Korean">Korean</option><option value="Lebanese">Lebanese</option><option value="Malaysian">Malaysian</option><option value="Maltese">Maltese</option><option value="Mexican">Mexican</option><option value="Nepalese">Nepalese</option><option value="Nigerian">Nigerian</option><option value="Pakistani">Pakistani</option><option value="Palestinian">Palestinian</option><option value="Persian">Persian</option><option value="Peruvian">Peruvian</option><option value="Polish">Polish</option><option value="Portuguese">Portuguese</option><option value="Romanian">Romanian</option><option value="Russian">Russian</option><option value="Salvadoran">Salvadoran</option><option value="Serbian">Serbian</option><option value="Somali">Somali</option><option value="Spanish">Spanish</option><option value="Sri Lankan">Sri Lankan</option><option value="Syrian">Syrian</option><option value="Taiwanese">Taiwanese</option><option value="Tanzanian">Tanzanian</option><option value="Thai">Thai</option><option value="Thai ">Thai </option><option value="Trinidadian">Trinidadian</option><option value="Turkish">Turkish</option><option value="Ukrainian">Ukrainian</option><option value="Uzbek">Uzbek</option><option value="Venezuelan">Venezuelan</option><option value="Vietnamese">Vietnamese</option><option value="Yemeni">Yemeni</option>
+    </select>
+    <select id="filter-price">
+      <option value="">Any Price</option>
+      <option value="1">$ Budget</option>
+      <option value="2">$$ Moderate</option>
+      <option value="3">$$$ Upscale</option>
+      <option value="4">$$$$ Fine Dining</option>
+    </select>
+    <select id="filter-rating">
+      <option value="0">Any Rating</option>
+      <option value="4.5">4.5+★</option>
+      <option value="4">4.0+★</option>
+      <option value="3.5">3.5+★</option>
+    </select>
+    <button id="clear-filters" class="clear-btn">✕ Clear Filters</button>
+    <div class="sort-group">
+      <button class="sort-btn active" data-sort="rating">Top Rated</button>
+      <button class="sort-btn" data-sort="reviews">Most Reviewed</button>
+      <button class="sort-btn" data-sort="name">A–Z</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="results-bar">
+    <div class="results-count" id="results-label">Loading…</div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-rating-row">
+        <span class="modal-stars" id="modal-stars"></span>
+        <span class="modal-rating-num" id="modal-rating-num"></span>
+        <span class="modal-reviews" id="modal-reviews"></span>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-badges" id="modal-badges"></div>
+      <div class="modal-section-title">Details</div>
+      <div id="modal-details"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let RAW = [];
+
+// Cuisine emoji
+const EMOJI = {'Italian':'🍕','Canadian':'🍁','Indian':'🍛','Chinese':'🥟','American':'🍔','Japanese':'🍣','Lebanese':'🧆','Jamaican':'🫙','Mexican':'🌮','Vietnamese':'🍜','Thai':'🌶️','Greek':'🫒','Korean':'🥩','French':'🥐','Caribbean':'🍤','Portuguese':'🥘','Brazilian':'🥩','Spanish':'🥘','Ethiopian':'🍲','Afghan':'🫕','Turkish':'🫕','Peruvian':'🥗','Middle Eastern':'🧆','Cantonese':'🥟','Bangladeshi':'🍛','Iranian':'🫕','Sri Lankan':'🍛','Pakistani':'🍛','Taiwanese':'🥟','Trinidadian':'🫙','Romanian':'🍲','Polish':'🥟','Hungarian':'🥘','Eritrean':'🍲','Somali':'🍲','Ghanaian':'🍲','Haitian':'🍲'};
+
+const PAGE_SIZE = 24;
+let filtered = [];
+let page = 1;
+let sortMode = 'rating';
+
+function stars(r) {
+  const full = Math.floor(r);
+  const half = r % 1 >= 0.5 ? 1 : 0;
+  let s = '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
+  return s.slice(0,5);
+}
+
+function price(p) {
+  return '$'.repeat(p || 1);
+}
+
+function getActiveFilters(excludeKey) {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const city = document.getElementById('filter-city').value;
+  const cuisine = document.getElementById('filter-cuisine').value;
+  const priceF = document.getElementById('filter-price').value;
+  const ratingF = parseFloat(document.getElementById('filter-rating').value) || 0;
+  return { q, city, cuisine, priceF, ratingF };
+}
+
+function matchesFilters(r, filters, excludeKey) {
+  const { q, city, cuisine, priceF, ratingF } = filters;
+  if (q) {
+    const haystack = (r['Restaurant Name'] + ' ' + r['City'] + ' ' + r['Cuisine'] + ' ' + r['Street']).toLowerCase();
+    if (!haystack.includes(q)) return false;
+  }
+  if (excludeKey !== 'city' && city && r['City'] !== city) return false;
+  if (excludeKey !== 'cuisine' && cuisine && r['Cuisine'] !== cuisine) return false;
+  if (excludeKey !== 'price' && priceF && r['Price Level'] != priceF) return false;
+  if (excludeKey !== 'rating' && ratingF && r['Rating'] < ratingF) return false;
+  return true;
+}
+
+function updateFilterOptions() {
+  const filters = getActiveFilters();
+
+  // Helper to rebuild a select with only valid options
+  function rebuildSelect(el, allOptions, validSet, labelKey) {
+    const current = el.value;
+    const firstOption = el.options[0]; // "All X" option
+    el.innerHTML = '';
+    el.appendChild(firstOption);
+    allOptions.forEach(opt => {
+      if (validSet.has(opt.value)) {
+        el.appendChild(opt);
+      }
+    });
+    // Restore selection if still valid
+    el.value = validSet.has(current) ? current : '';
+  }
+
+  // Cities
+  const validCities = new Set(RAW.filter(r => matchesFilters(r, filters, 'city')).map(r => r['City']));
+  const cityEl = document.getElementById('filter-city');
+  rebuildSelect(cityEl, allCityOptions, validCities);
+
+  // Cuisines
+  const validCuisines = new Set(RAW.filter(r => matchesFilters(r, filters, 'cuisine')).map(r => r['Cuisine']));
+  const cuisineEl = document.getElementById('filter-cuisine');
+  rebuildSelect(cuisineEl, allCuisineOptions, validCuisines);
+
+  // Prices
+  const validPrices = new Set(RAW.filter(r => matchesFilters(r, filters, 'price')).map(r => String(r['Price Level'])));
+  const priceEl = document.getElementById('filter-price');
+  rebuildSelect(priceEl, allPriceOptions, validPrices);
+
+  // Ratings
+  const maxRating = Math.max(0, ...RAW.filter(r => matchesFilters(r, filters, 'rating')).map(r => r['Rating']));
+  const ratingEl = document.getElementById('filter-rating');
+  const currentRating = ratingEl.value;
+  const firstRatingOpt = ratingEl.options[0];
+  ratingEl.innerHTML = '';
+  ratingEl.appendChild(firstRatingOpt);
+  allRatingOptions.forEach(opt => {
+    if (maxRating >= parseFloat(opt.value)) ratingEl.appendChild(opt);
+  });
+  ratingEl.value = (currentRating !== '0' && maxRating >= parseFloat(currentRating)) ? currentRating : '0';
+}
+
+function applyFilters() {
+  const filters = getActiveFilters();
+
+  filtered = RAW.filter(r => matchesFilters(r, filters, null));
+
+  if (sortMode === 'rating') filtered.sort((a,b) => b['Rating'] - a['Rating'] || b['Number of Reviews'] - a['Number of Reviews']);
+  else if (sortMode === 'reviews') filtered.sort((a,b) => b['Number of Reviews'] - a['Number of Reviews']);
+  else filtered.sort((a,b) => a['Restaurant Name'].localeCompare(b['Restaurant Name']));
+
+  updateFilterOptions();
+  page = 1;
+  render();
+}
+
+function render() {
+  const total = filtered.length;
+  document.getElementById('results-label').innerHTML = `<strong>${total.toLocaleString()}</strong> restaurants found`;
+
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = filtered.slice(start, start + PAGE_SIZE);
+
+  const grid = document.getElementById('grid');
+
+  if (slice.length === 0) {
+    grid.innerHTML = `<div class="no-results" style="grid-column:1/-1">
+      <div class="big">🍽️</div>
+      <h3>No restaurants found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = slice.map((r, i) => {
+    const em = EMOJI[r['Cuisine']] || '🍽️';
+    const delay = (i % PAGE_SIZE) * 20;
+    return `<div class="card" style="animation-delay:${delay}ms" onclick="openModal(${RAW.indexOf(r)})">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${r['Restaurant Name']}</div>
+          <div class="card-rating"><span class="star">★</span><span class="num">${r['Rating'].toFixed(1)}</span></div>
+        </div>
+        <div class="card-meta">
+          <span class="badge badge-cuisine">${em} ${r['Cuisine']}</span>
+          <span class="badge badge-city">📍 ${r['City']}</span>
+          <span class="badge badge-price">${price(r['Price Level'])}</span>
+        </div>
+        <div class="card-info">
+          ${r['Street'] ? `<div class="card-info-row"><span class="icon">🗺</span> ${r['Street']}</div>` : ''}
+          ${r['Phone'] ? `<div class="card-info-row"><span class="icon">📞</span> ${r['Phone']}</div>` : ''}
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="reviews"><strong>${r['Number of Reviews'].toLocaleString()}</strong> reviews</span>
+        ${r['Website'] ? `<a href="${r['Website']}" target="_blank" onclick="event.stopPropagation()" style="font-size:12px;color:var(--rust);text-decoration:none">Visit ↗</a>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn" ${page===1?'disabled':''} onclick="goPage(${page-1})">‹ Prev</button>`;
+
+  const range = [];
+  for (let p = 1; p <= pages; p++) {
+    if (p === 1 || p === pages || (p >= page - 2 && p <= page + 2)) range.push(p);
+    else if (range[range.length-1] !== '…') range.push('…');
+  }
+
+  range.forEach(p => {
+    if (p === '…') html += `<span class="page-btn" style="border:none;color:#bbb">…</span>`;
+    else html += `<button class="page-btn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  });
+
+  html += `<button class="page-btn" ${page===pages?'disabled':''} onclick="goPage(${page+1})">Next ›</button>`;
+  document.getElementById('pagination').innerHTML = html;
+}
+
+function goPage(p) {
+  page = p;
+  render();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function openModal(idx) {
+  const r = RAW[idx];
+  document.getElementById('modal-title').textContent = r['Restaurant Name'];
+
+  const starVal = Math.round(r['Rating']);
+  document.getElementById('modal-stars').textContent = '★'.repeat(starVal) + '☆'.repeat(5-starVal);
+  document.getElementById('modal-rating-num').textContent = r['Rating'].toFixed(1) + ' / 5';
+  document.getElementById('modal-reviews').textContent = r['Number of Reviews'].toLocaleString() + ' reviews';
+
+  const em = EMOJI[r['Cuisine']] || '🍽️';
+  document.getElementById('modal-badges').innerHTML = `
+    <span class="badge badge-cuisine" style="font-size:13px;padding:5px 13px">${em} ${r['Cuisine']}</span>
+    <span class="badge badge-city" style="font-size:13px;padding:5px 13px">📍 ${r['City']}</span>
+    <span class="badge badge-price" style="font-size:14px;padding:5px 13px">${price(r['Price Level'])}</span>
+  `;
+
+  let details = '';
+  if (r['Street']) {
+    const address = `${r['Street Number'] ? r['Street Number'] + ' ' : ''}${r['Street']}, ${r['City']}${r['Postal Code'] ? ' ' + r['Postal Code'] : ''}`;
+    const mapsQuery = encodeURIComponent(address);
+    details += `<div class="modal-detail"><span class="icon">🗺</span><a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" style="color:var(--rust);text-decoration:none">${address}</a></div>`;
+  }
+  if (r['Phone']) details += `<div class="modal-detail"><span class="icon">📞</span><a href="tel:${r['Phone']}">${r['Phone']}</a></div>`;
+  if (r['Website']) details += `<div class="modal-detail"><span class="icon">🌐</span><a href="${r['Website']}" target="_blank">${r['Website']}</a></div>`;
+  document.getElementById('modal-details').innerHTML = details;
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+document.getElementById('modal-close').onclick = () => document.getElementById('modal-overlay').classList.remove('open');
+document.getElementById('modal-overlay').onclick = (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); };
+
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    sortMode = btn.dataset.sort;
+    applyFilters();
+  };
+});
+
+['search','filter-city','filter-cuisine','filter-price','filter-rating'].forEach(id => {
+  document.getElementById(id).addEventListener('input', applyFilters);
+});
+
+document.getElementById('clear-filters').onclick = () => {
+  document.getElementById('search').value = '';
+  document.getElementById('filter-city').value = '';
+  document.getElementById('filter-cuisine').value = '';
+  document.getElementById('filter-price').value = '';
+  document.getElementById('filter-rating').value = '0';
+  applyFilters();
+};
+
+// Snapshot all original filter options before any filtering
+const allCityOptions = [...document.getElementById('filter-city').options].filter(o => o.value).map(o => o.cloneNode(true));
+const allCuisineOptions = [...document.getElementById('filter-cuisine').options].filter(o => o.value).map(o => o.cloneNode(true));
+const allPriceOptions = [...document.getElementById('filter-price').options].filter(o => o.value).map(o => o.cloneNode(true));
+const allRatingOptions = [...document.getElementById('filter-rating').options].filter(o => o.value && o.value !== '0').map(o => o.cloneNode(true));
+
+// Fetch restaurant data from Google Sheets CSV
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSSi_SfLr86Px-bEWaesSWOpo9Gxehu9Va8eOCk8M1NyvfoQ0UFGiUNZngw2FZHy5wzHeddT4s5Gkk4/pub?gid=1846398112&single=true&output=csv';
+
+function parseCSVRow(line) {
+  const result = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"' && !inQuote) { inQuote = true; }
+    else if (ch === '"' && inQuote) {
+      if (line[i + 1] === '"') { cur += '"'; i++; }
+      else { inQuote = false; }
+    } else if (ch === ',' && !inQuote) { result.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur);
+  return result;
+}
+
+function parseCSV(text) {
+  const rows = text.split('\n').filter(l => l.trim());
+  if (!rows.length) return [];
+  const headers = parseCSVRow(rows[0]);
+  return rows.slice(1).map(row => {
+    const vals = parseCSVRow(row);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h.trim()] = (vals[i] || '').trim(); });
+    obj['Rating'] = parseFloat(obj['Rating']) || 0;
+    obj['Price Level'] = parseInt(obj['Price Level']) || 0;
+    obj['Number of Reviews'] = parseInt(obj['Number of Reviews']) || 0;
+    return obj;
+  }).filter(r => r['Restaurant Name']);
+}
+
+document.getElementById('results-label').innerHTML = 'Loading\u2026';
+
+fetch(CSV_URL)
+  .then(r => { if (!r.ok) throw new Error('Network error'); return r.text(); })
+  .then(text => {
+    RAW = parseCSV(text);
+    applyFilters();
+  })
+  .catch(() => {
+    document.getElementById('results-label').textContent = 'Failed to load restaurant data. Please refresh.';
+  });
+</script>
+</body>
+</html>
