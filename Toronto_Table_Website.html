@@ -1778,7 +1778,7 @@ function applyFilters() {
 
 function render() {
   const total = filtered.length;
-  document.getElementById('results-label').innerHTML = `<strong>${total.toLocaleString()}</strong> restaurants found`;
+  document.getElementById('results-label').innerHTML = `<strong>${total.toLocaleString()}</strong> restaurants`;
 
   const start = (page - 1) * PAGE_SIZE;
   const slice = filtered.slice(start, start + PAGE_SIZE);
