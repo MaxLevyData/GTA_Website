@@ -1619,13 +1619,7 @@ function handleAuth() {
   if (currentUser) {
     auth.signOut();
   } else {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      auth.signInWithRedirect(provider);
-    } else {
-      auth.signInWithPopup(provider).catch(console.error);
-    }
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(console.error);
   }
 }
 
