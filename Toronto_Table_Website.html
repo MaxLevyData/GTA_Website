@@ -1619,7 +1619,9 @@ function handleAuth() {
   if (currentUser) {
     auth.signOut();
   } else {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(console.error);
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    auth.signInWithPopup(provider).catch(console.error);
   }
 }
 
