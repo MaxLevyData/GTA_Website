@@ -1412,6 +1412,16 @@
 
 <button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 
+<div class="signin-overlay" id="signout-overlay" onclick="if(event.target===this)closeSignoutPopup()">
+  <div class="signin-popup">
+    <div class="signin-popup-icon">👋</div>
+    <h3>Sign out?</h3>
+    <p>You'll need to sign back in to access your saved favourites.</p>
+    <button class="signin-popup-btn" onclick="closeSignoutPopup();auth.signOut()">Sign Out</button>
+    <button class="signin-popup-dismiss" onclick="closeSignoutPopup()">Cancel</button>
+  </div>
+</div>
+
 <div class="signin-overlay" id="signin-overlay" onclick="if(event.target===this)closeSigninPopup()">
   <div class="signin-popup">
     <div class="signin-popup-icon">♡</div>
@@ -1617,7 +1627,7 @@ auth.onAuthStateChanged(user => {
 
 function handleAuth() {
   if (currentUser) {
-    if (confirm('Are you sure you want to sign out?')) auth.signOut();
+    showSignoutPopup();
   } else {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
@@ -1658,6 +1668,12 @@ function showSigninPopup() {
 }
 function closeSigninPopup() {
   document.getElementById('signin-overlay').classList.remove('show');
+}
+function showSignoutPopup() {
+  document.getElementById('signout-overlay').classList.add('show');
+}
+function closeSignoutPopup() {
+  document.getElementById('signout-overlay').classList.remove('show');
 }
 
 function toggleFav(idx, e) {
