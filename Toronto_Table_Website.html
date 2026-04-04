@@ -1517,6 +1517,12 @@ function cuisineIcon(c) {
 
 function saveChips() {
   localStorage.setItem('tt_chips', JSON.stringify([...userChips]));
+  if (currentUser) {
+    db.collection('preferences').doc(currentUser.uid).set({
+      chips: [...userChips],
+      selectedCuisines: [...selectedCuisines]
+    }, { merge: true }).catch(console.error);
+  }
 }
 
 function toggleChipPicker() {
@@ -1587,6 +1593,7 @@ function selectChip(cuisine) {
     selectedCuisines.add(cuisine);
   }
   document.getElementById('filter-cuisine').value = '';
+  saveChips();
   applyFilters();
 }
 
@@ -1621,6 +1628,7 @@ auth.onAuthStateChanged(user => {
     const name = user.displayName ? user.displayName.split(' ')[0] : user.email;
     btn.textContent = 'Sign Out (' + name + ')';
     loadFavsFromFirestore(user.uid);
+    loadPrefsFromFirestore(user.uid);
   } else {
     btn.textContent = 'Sign In with Google';
     FAVS = new Set(JSON.parse(localStorage.getItem('tt_favs_v2') || '[]'));
@@ -1648,6 +1656,23 @@ function loadFavsFromFirestore(uid) {
     FAVS = new Set();
     updateFavsCount();
   });
+}
+
+function loadPrefsFromFirestore(uid) {
+  db.collection('preferences').doc(uid).get().then(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.chips) {
+        userChips = new Set(data.chips);
+        localStorage.setItem('tt_chips', JSON.stringify(data.chips));
+      }
+      if (data.selectedCuisines) {
+        selectedCuisines = new Set(data.selectedCuisines);
+      }
+    }
+    if (RAW.length) applyFilters();
+    renderChips();
+  }).catch(console.error);
 }
 
 function updateFavsCount() {
