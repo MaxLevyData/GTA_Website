@@ -1617,7 +1617,7 @@ auth.onAuthStateChanged(user => {
 
 function handleAuth() {
   if (currentUser) {
-    auth.signOut();
+    if (confirm('Are you sure you want to sign out?')) auth.signOut();
   } else {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
