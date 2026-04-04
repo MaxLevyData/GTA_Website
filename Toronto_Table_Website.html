@@ -1615,7 +1615,13 @@ function handleAuth() {
   if (currentUser) {
     auth.signOut();
   } else {
-    auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      auth.signInWithRedirect(provider);
+    } else {
+      auth.signInWithPopup(provider).catch(console.error);
+    }
   }
 }
 
@@ -1656,7 +1662,11 @@ function closeSigninPopup() {
 
 function toggleFav(idx, e) {
   e.stopPropagation();
-  if (!currentUser) { handleAuth(); return; }
+  if (!currentUser) {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) { handleAuth(); } else { showSigninPopup(); }
+    return;
+  }
   const key = favKey(RAW[idx]);
   if (FAVS.has(key)) FAVS.delete(key);
   else FAVS.add(key);
