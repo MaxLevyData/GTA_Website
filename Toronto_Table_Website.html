@@ -1515,12 +1515,15 @@ function cuisineIcon(c) {
   return EMOJI[c] || '🍽️';
 }
 
-function saveChips() {
+function savePrefs() {
   localStorage.setItem('tt_chips', JSON.stringify([...userChips]));
   if (currentUser) {
     db.collection('preferences').doc(currentUser.uid).set({
       chips: [...userChips],
-      selectedCuisines: [...selectedCuisines]
+      selectedCuisines: [...selectedCuisines],
+      city: document.getElementById('filter-city').value,
+      price: document.getElementById('filter-price').value,
+      rating: document.getElementById('filter-rating').value,
     }, { merge: true }).catch(console.error);
   }
 }
@@ -1539,7 +1542,7 @@ function toggleChipPicker() {
 function toggleChipInPicker(cuisine) {
   if (userChips.has(cuisine)) userChips.delete(cuisine);
   else userChips.add(cuisine);
-  saveChips();
+  savePrefs();
   renderChips();
   renderChipList();
 }
@@ -1593,7 +1596,7 @@ function selectChip(cuisine) {
     selectedCuisines.add(cuisine);
   }
   document.getElementById('filter-cuisine').value = '';
-  saveChips();
+  savePrefs();
   applyFilters();
 }
 
@@ -1666,9 +1669,10 @@ function loadPrefsFromFirestore(uid) {
         userChips = new Set(data.chips);
         localStorage.setItem('tt_chips', JSON.stringify(data.chips));
       }
-      if (data.selectedCuisines) {
-        selectedCuisines = new Set(data.selectedCuisines);
-      }
+      if (data.selectedCuisines) selectedCuisines = new Set(data.selectedCuisines);
+      if (data.city)   document.getElementById('filter-city').value = data.city;
+      if (data.price)  document.getElementById('filter-price').value = data.price;
+      if (data.rating) document.getElementById('filter-rating').value = data.rating;
     }
     if (RAW.length) applyFilters();
     renderChips();
@@ -1986,8 +1990,9 @@ document.querySelectorAll('.sort-btn').forEach(btn => {
   };
 });
 
-['search','filter-city','filter-price','filter-rating'].forEach(id => {
-  document.getElementById(id).addEventListener('input', applyFilters);
+document.getElementById('search').addEventListener('input', applyFilters);
+['filter-city','filter-price','filter-rating'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => { applyFilters(); savePrefs(); });
 });
 document.getElementById('filter-cuisine').addEventListener('input', () => {
   selectedCuisines.clear();
@@ -2012,6 +2017,7 @@ document.getElementById('clear-filters').onclick = () => {
   document.getElementById('favs-tab').classList.remove('active');
   document.getElementById('favs-tab').innerHTML = '♡ Favourites (<span id="favs-count">' + FAVS.size + '</span>)';
   updateFilterBadge();
+  savePrefs();
   applyFilters();
 };
 
