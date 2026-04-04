@@ -1594,6 +1594,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
+auth.getRedirectResult().catch(console.error);
+
 auth.onAuthStateChanged(user => {
   currentUser = user;
   const btn = document.getElementById('auth-btn');
