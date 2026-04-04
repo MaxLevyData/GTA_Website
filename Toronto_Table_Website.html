@@ -1662,11 +1662,7 @@ function closeSigninPopup() {
 
 function toggleFav(idx, e) {
   e.stopPropagation();
-  if (!currentUser) {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) { handleAuth(); } else { showSigninPopup(); }
-    return;
-  }
+  if (!currentUser) { showSigninPopup(); return; }
   const key = favKey(RAW[idx]);
   if (FAVS.has(key)) FAVS.delete(key);
   else FAVS.add(key);
