@@ -1093,6 +1093,11 @@
     font-size: 11px;
     padding: 6px 6px;
   }
+  #chip-picker-list .cuisine-chip.excluded {
+    background: #b02a2a;
+    border-color: #b02a2a;
+    color: #fff;
+  }
 
   /* Loading */
   .loading {
@@ -1479,6 +1484,7 @@ const COUNTRY_CODES = {
 
 const DEFAULT_CHIPS = ['Italian','Chinese','American','Mexican','Thai'];
 let userChips = new Set(JSON.parse(localStorage.getItem('tt_chips') || JSON.stringify(DEFAULT_CHIPS)));
+let excludedCuisines = new Set(JSON.parse(localStorage.getItem('tt_excluded_cuisines') || '[]'));
 let chipPickerOpen = false;
 let chipSearch = '';
 
@@ -1490,9 +1496,11 @@ function cuisineIcon(c) {
 
 function savePrefs() {
   localStorage.setItem('tt_chips', JSON.stringify([...userChips]));
+  localStorage.setItem('tt_excluded_cuisines', JSON.stringify([...excludedCuisines]));
   if (currentUser) {
     db.collection('preferences').doc(currentUser.uid).set({
       chips: [...userChips],
+      excludedCuisines: [...excludedCuisines],
       selectedCuisines: [...selectedCuisines],
       city: document.getElementById('filter-city').value,
       price: document.getElementById('filter-price').value,
@@ -1513,8 +1521,17 @@ function toggleChipPicker() {
 }
 
 function toggleChipInPicker(cuisine) {
-  if (userChips.has(cuisine)) userChips.delete(cuisine);
-  else userChips.add(cuisine);
+  if (excludedCuisines.has(cuisine)) {
+    // excluded → normal (remove entirely)
+    excludedCuisines.delete(cuisine);
+  } else if (userChips.has(cuisine)) {
+    // active → excluded (remove from chips, add to excluded)
+    userChips.delete(cuisine);
+    excludedCuisines.add(cuisine);
+  } else {
+    // normal → active (add to chips)
+    userChips.add(cuisine);
+  }
   savePrefs();
   renderChips();
   renderChipList();
@@ -1541,7 +1558,10 @@ function renderChipList() {
     ? allCuisines.filter(c => c.toLowerCase().includes(chipSearch.toLowerCase()))
     : allCuisines;
   document.getElementById('chip-picker-list').innerHTML = display.length
-    ? display.map(c => `<button class="cuisine-chip${userChips.has(c) ? ' active' : ''}" onclick="toggleChipInPicker('${c.replace(/'/g, "\\'")}')">${cuisineIcon(c)} ${c}</button>`).join('')
+    ? display.map(c => {
+        const cls = excludedCuisines.has(c) ? ' excluded' : (userChips.has(c) ? ' active' : '');
+        return `<button class="cuisine-chip${cls}" onclick="toggleChipInPicker('${c.replace(/'/g, "\\'")}')" title="${excludedCuisines.has(c) ? 'Excluded — click to remove' : userChips.has(c) ? 'Shown in bar — click to exclude' : 'Click to add to bar'}">${cuisineIcon(c)} ${c}</button>`;
+      }).join('')
     : `<span style="color:#999;font-size:13px">No cuisines found</span>`;
 }
 
@@ -1652,6 +1672,10 @@ function loadPrefsFromFirestore(uid) {
         userChips = new Set(data.chips);
         localStorage.setItem('tt_chips', JSON.stringify(data.chips));
       }
+      if (data.excludedCuisines) {
+        excludedCuisines = new Set(data.excludedCuisines);
+        localStorage.setItem('tt_excluded_cuisines', JSON.stringify(data.excludedCuisines));
+      }
       if (data.selectedCuisines) selectedCuisines = new Set(data.selectedCuisines);
       if (data.city)   document.getElementById('filter-city').value = data.city;
       if (data.price)  document.getElementById('filter-price').value = data.price;
@@ -1739,6 +1763,7 @@ function matchesFilters(r, filters, excludeKey) {
     if (!haystack.includes(q)) return false;
   }
   if (excludeKey !== 'city' && city && r['City'] !== city) return false;
+  if (excludedCuisines.size > 0 && excludedCuisines.has(r['Cuisine'])) return false;
   if (excludeKey !== 'cuisine') {
     if (selectedCuisines.size > 0 && !selectedCuisines.has(r['Cuisine'])) return false;
     else if (selectedCuisines.size === 0 && cuisine && r['Cuisine'] !== cuisine) return false;
