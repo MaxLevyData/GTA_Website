@@ -1250,6 +1250,11 @@
       padding-bottom: 4px;
     }
     .cuisine-chips::-webkit-scrollbar { display: none; }
+
+    /* Pagination on mobile */
+    .pagination { gap: 4px; margin-top: 28px; }
+    .page-btn { padding: 8px 10px; min-width: 38px; font-size: 13px; }
+    .page-jump { display: none; }
   }
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1867,9 +1872,11 @@ function renderPagination(total) {
   let html = '';
   html += `<button class="page-btn" ${page===1?'disabled':''} onclick="goPage(${page-1})">‹ Prev</button>`;
 
+  const isMobile = window.innerWidth <= 640;
+  const spread = isMobile ? 1 : 2;
   const range = [];
   for (let p = 1; p <= pages; p++) {
-    if (p === 1 || p === pages || (p >= page - 2 && p <= page + 2)) range.push(p);
+    if (p === 1 || p === pages || (p >= page - spread && p <= page + spread)) range.push(p);
     else if (range[range.length-1] !== '…') range.push('…');
   }
 
