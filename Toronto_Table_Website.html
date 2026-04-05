@@ -1586,6 +1586,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
+// Keep users signed in until they explicitly sign out
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+
+// On mobile, signInWithRedirect returns here after redirect — catch the result
 auth.getRedirectResult().then(result => {
   if (result && result.user) {
     auth.updateCurrentUser(result.user);
@@ -1614,7 +1618,13 @@ function handleAuth() {
   } else {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-    auth.signInWithPopup(provider).catch(console.error);
+    // Use redirect on mobile (popups are blocked/unreliable), popup on desktop
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) {
+      auth.signInWithRedirect(provider).catch(console.error);
+    } else {
+      auth.signInWithPopup(provider).catch(console.error);
+    }
   }
 }
 
