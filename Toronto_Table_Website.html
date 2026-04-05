@@ -1252,12 +1252,9 @@
     .cuisine-chips::-webkit-scrollbar { display: none; }
 
     /* Pagination on mobile */
-    .pagination { gap: 4px; margin-top: 28px; }
+    .pagination { gap: 4px; margin-top: 28px; justify-content: flex-start; flex-wrap: nowrap; padding-right: 60px; }
     .page-btn { padding: 8px 10px; min-width: 38px; font-size: 13px; }
     .page-jump { display: none; }
-
-    /* Shift pagination left so it doesn't get covered by the back-to-top button */
-    .pagination { justify-content: flex-start; padding-left: 16px; padding-right: 64px; }
   }
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
