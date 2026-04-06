@@ -1644,13 +1644,15 @@ function handleAuth() {
   } else {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-    // Use redirect on mobile (popups are blocked/unreliable), popup on desktop
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile) {
-      auth.signInWithRedirect(provider).catch(console.error);
-    } else {
-      auth.signInWithPopup(provider).catch(console.error);
-    }
+    // Popup works on iOS Safari when triggered by a direct tap.
+    // Only fall back to redirect if the popup is explicitly blocked.
+    auth.signInWithPopup(provider).catch(err => {
+      if (err.code === 'auth/popup-blocked') {
+        auth.signInWithRedirect(provider).catch(console.error);
+      } else if (err.code !== 'auth/popup-closed-by-user') {
+        console.error(err);
+      }
+    });
   }
 }
 
