@@ -2019,7 +2019,7 @@ document.querySelectorAll('.sort-btn').forEach(btn => {
 });
 
 document.getElementById('search').addEventListener('input', applyFilters);
-['filter-city','filter-price','filter-rating'].forEach(id => {
+['filter-city','filter-price','filter-rating','filter-website'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => { applyFilters(); savePrefs(); });
 });
 document.getElementById('filter-cuisine').addEventListener('input', () => {
