@@ -1376,6 +1376,14 @@
         <option value="3.5">3.5+★</option>
       </select>
     </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Website</div>
+      <select id="filter-website">
+        <option value="">Any</option>
+        <option value="yes">Has Website</option>
+        <option value="no">No Website</option>
+      </select>
+    </div>
   </div>
   <div class="drawer-footer">
     <button id="clear-filters" class="clear-btn">✕ Clear All</button>
@@ -1756,11 +1764,12 @@ function getActiveFilters(excludeKey) {
   const cuisine = document.getElementById('filter-cuisine').value;
   const priceF = document.getElementById('filter-price').value;
   const ratingF = parseFloat(document.getElementById('filter-rating').value) || 0;
-  return { q, city, cuisine, priceF, ratingF };
+  const websiteF = document.getElementById('filter-website').value;
+  return { q, city, cuisine, priceF, ratingF, websiteF };
 }
 
 function matchesFilters(r, filters, excludeKey) {
-  const { q, city, cuisine, priceF, ratingF } = filters;
+  const { q, city, cuisine, priceF, ratingF, websiteF } = filters;
   if (q) {
     const haystack = (r['Restaurant Name'] + ' ' + r['City'] + ' ' + r['Cuisine'] + ' ' + r['Street']).toLowerCase();
     if (!haystack.includes(q)) return false;
@@ -1773,6 +1782,11 @@ function matchesFilters(r, filters, excludeKey) {
   }
   if (excludeKey !== 'price' && priceF && r['Price Level'] != priceF) return false;
   if (excludeKey !== 'rating' && ratingF && r['Rating'] < ratingF) return false;
+  if (excludeKey !== 'website' && websiteF) {
+    const hasWebsite = !!(r['Website'] && r['Website'].trim());
+    if (websiteF === 'yes' && !hasWebsite) return false;
+    if (websiteF === 'no' && hasWebsite) return false;
+  }
   return true;
 }
 
@@ -1984,6 +1998,7 @@ function countActiveFilters() {
   if (document.getElementById('filter-cuisine').value || selectedCuisines.size > 0) n++;
   if (document.getElementById('filter-price').value) n++;
   if (parseFloat(document.getElementById('filter-rating').value) > 0) n++;
+  if (document.getElementById('filter-website').value) n++;
   return n;
 }
 
@@ -2026,6 +2041,7 @@ document.getElementById('clear-filters').onclick = () => {
   selectedCuisines.clear();
   document.getElementById('filter-price').value = '';
   document.getElementById('filter-rating').value = '0';
+  document.getElementById('filter-website').value = '';
   showFavsOnly = false;
   document.getElementById('favs-tab').classList.remove('active');
   document.getElementById('favs-tab').innerHTML = '♡ Favourites (<span id="favs-count">' + FAVS.size + '</span>)';
